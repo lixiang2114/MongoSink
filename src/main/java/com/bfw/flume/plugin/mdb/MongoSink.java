@@ -173,6 +173,7 @@ public class MongoSink extends AbstractSink implements Configurable, BatchSizeSu
 			tx.commit();
 			return status;
 		}catch(Throwable e){
+			e.printStackTrace();
 			tx.rollback();
 			return Status.BACKOFF;
 		}finally{
@@ -361,6 +362,7 @@ public class MongoSink extends AbstractSink implements Configurable, BatchSizeSu
 			
 			String collectionNameStr=(String)filterType.getDeclaredMethod("getCollectionName") .invoke(filterObject);
 			if(null==collectionNameStr || 0==(collectionName=collectionNameStr.trim()).length()) throw new RuntimeException("collection name can not be NULL!!!");
+			
 			doFilter=filterType.getDeclaredMethod("doFilter",String.class);
 		}catch(Exception e){
 			throw new RuntimeException(e);
@@ -414,7 +416,15 @@ public class MongoSink extends AbstractSink implements Configurable, BatchSizeSu
 			}
 			
 			if(null==field) continue;
-			Object value=TypeUtil.toType((String)entry.getValue(), field.getType());
+			
+			Object value=null;
+			try{
+				value=TypeUtil.toType((String)entry.getValue(), field.getType());
+			}catch(RuntimeException e){
+				e.printStackTrace();
+			}
+			
+			if(null==value) continue;
 			
 			try {
 				if((field.getModifiers() & 0x00000008) == 0){

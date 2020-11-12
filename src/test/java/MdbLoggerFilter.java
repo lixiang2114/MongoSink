@@ -16,6 +16,16 @@ public class MdbLoggerFilter implements SinkFilter{
 	private String[] fields;
 	
 	/**
+	 * 登录MongoDB用户名
+	 */
+	private static String userName;
+	
+	/**
+	 * 登录MongoDB密码
+	 */
+	private static String passWord;
+	
+	/**
 	 * 文档索引类型
 	 */
 	private String collectionName;
@@ -38,6 +48,16 @@ public class MdbLoggerFilter implements SinkFilter{
 	@Override
 	public String getDocId() {
 		return fields[0]; 
+	}
+	
+	@Override
+	public String getPassword() {
+		return passWord;
+	}
+
+	@Override
+	public String getUsername() {
+		return userName;
 	}
 
 	@Override
