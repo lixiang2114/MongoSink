@@ -1,4 +1,4 @@
-package com.bfw.flume.plugin.mdb;
+package com.github.lixiang2114.flume.plugin.mdb;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +23,8 @@ import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import org.bson.Document;
 
-import com.bfw.flume.plugin.mdb.util.ClassLoaderUtil;
-import com.bfw.flume.plugin.mdb.util.TypeUtil;
+import com.github.lixiang2114.flume.plugin.mdb.util.ClassLoaderUtil;
+import com.github.lixiang2114.flume.plugin.mdb.util.TypeUtil;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientOptions.Builder;

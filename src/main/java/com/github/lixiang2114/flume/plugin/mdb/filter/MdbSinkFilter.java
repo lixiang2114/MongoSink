@@ -1,4 +1,4 @@
-package com.bfw.flume.plugin.mdb.filter;
+package com.github.lixiang2114.flume.plugin.mdb.filter;
 
 import java.util.Map;
 import java.util.Properties;
@@ -7,7 +7,7 @@ import java.util.Properties;
  * @author Louis(LiXiang)
  * @description 自定义Sink过滤器接口规范
  */
-public interface SinkFilter {
+public interface MdbSinkFilter {
 	/**
 	 * 获取数据库名称
 	 * @return 索引名称

@@ -1,4 +1,4 @@
-package com.bfw.flume.plugin.mdb.util;
+package com.github.lixiang2114.flume.plugin.mdb.util;
 
 /**
  * @author Louis(LiXiang)

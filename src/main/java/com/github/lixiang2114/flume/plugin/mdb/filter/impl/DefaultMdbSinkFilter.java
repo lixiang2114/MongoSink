@@ -1,16 +1,16 @@
-package com.bfw.flume.plugin.mdb.filter.impl;
+package com.github.lixiang2114.flume.plugin.mdb.filter.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.bfw.flume.plugin.mdb.filter.SinkFilter;
+import com.github.lixiang2114.flume.plugin.mdb.filter.MdbSinkFilter;
 
 /**
  * @author Louis(LiXiang)
  * @description MongoDB-Sink默认过滤器
  */
-public class DefaultSinkFilter implements SinkFilter{
+public class DefaultMdbSinkFilter implements MdbSinkFilter{
 	/**
 	 * 文档ID字段名
 	 */
@@ -64,27 +64,27 @@ public class DefaultSinkFilter implements SinkFilter{
 
 	@Override
 	public String getDocId() {
-		return DefaultSinkFilter.docId;
+		return docId;
 	}
 	
 	@Override
 	public String getPassword() {
-		return DefaultSinkFilter.passWord;
+		return passWord;
 	}
 
 	@Override
 	public String getUsername() {
-		return DefaultSinkFilter.userName;
+		return userName;
 	}
 
 	@Override
 	public String getCollectionName() {
-		return DefaultSinkFilter.collectionName;
+		return collectionName;
 	}
 
 	@Override
 	public String getDataBaseName() {
-		return DefaultSinkFilter.dataBaseName;
+		return dataBaseName;
 	}
 
 	@Override
