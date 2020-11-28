@@ -119,7 +119,6 @@ a1.channels.c2.transactionCapacity=100
 
 3. 启动MongoDB服务  
 ```Shell
-su -l elastic
 /software/mongodb-4.4.1/sbin/SingleTools start
 lsof -i tcp:27017
 ```
