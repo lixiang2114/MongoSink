@@ -48,7 +48,7 @@ unzip depends.zip   &&   cp -a depends/*   /software/flume-1.9.0/lib/
 ​      
 #### MongoDB服务安装
 1. 下载MongoDB  
-wget https://github.com/lixiang2114/Software/raw/main/mongodb-4.4.1.zip  
+wget https://github.com/lixiang2114/Software/raw/main/mongodb-4.2.6.zip  
   
     
    
@@ -97,7 +97,7 @@ a1.sources.s1.selector.type=replicating
 a1.sinks.k1.type=logger
 a1.sinks.k1.channel=c1
 
-a1.sinks.k2.type=com.bfw.flume.plugin.mdb.MongoSink
+a1.sinks.k2.type=com.github.lixiang2114.flume.plugin.mdb.MongoSink
 a1.sinks.k2.hostList=192.168.162.130:27017
 a1.sinks.k2.fieldList=times,level,message
 a1.sinks.k2.filterName=mdbFilter
@@ -144,7 +144,7 @@ for index in {1..100000};do echo "${index},info,this is my ${index} times test";
 ##### 过滤器接口规范简介
 不同的Sink组件可以对应到不同的插件过滤器，编写插件过滤器的接口规范如下：  
 ```JAVA
-package com.bfw.flume.plugin.mdb.filter;
+package com.github.lixiang2114.flume.plugin.mdb.filter;
 
 import java.util.Map;
 import java.util.Properties;
@@ -153,7 +153,7 @@ import java.util.Properties;
  * @author Louis(LiXiang)
  * @description 自定义Sink过滤器接口规范
  */
-public interface SinkFilter {
+public interface MdbSinkFilter {
 	/**
 	 * 获取数据库名称
 	 * @return 索引名称
@@ -217,13 +217,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import com.bfw.flume.plugin.mdb.filter.SinkFilter;
+import com.github.lixiang2114.flume.plugin.mdb.filter.MdbSinkFilter;
 
 /**
  * @author Louis(LiXiang)
  * @description 自定义日志过滤器
  */
-public class MdbLoggerFilter implements SinkFilter{
+public class MdbLoggerFilter implements MdbSinkFilter{
 	/**
 	 * 字段列表
 	 */
@@ -282,8 +282,10 @@ public class MdbLoggerFilter implements SinkFilter{
 ```
 
 说明：  
+上面实现的接口MdbSinkFilter来自于FlumePluginFilter.jar包，我们可以从github上下载获得：
+wget https://github.com/lixiang2114/Document/raw/main/plugin/flume1.9/face/FlumePluginFilter.jar  
 可以使用Eclipse、Idea等IDE集成开发工具来完成上述编码和编译过程，如果过滤器项目是基于Maven构建的，还可以直接使用Maven来编译项目，如果过滤器简单到只有单个类文件也可以直接使用命令行编译：  
-javac -cp MongoSink-1.0.jar MdbLoggerFilter.java  
+javac -cp FlumePluginFilter.jar MdbLoggerFilter.java  
 
 如果编译后的项目不止一个字节码文件则需要打包：  
 Maven： mvn package -f  /xxx/pom.xml  
@@ -323,12 +325,12 @@ fields=docId,level,msg
 MongoSink插件支持多实例Sink复用，即不同的Sink实例可以重用MongoSink插件，假如我们有两个MongoDB的集群构建，我们希望于按业务线或模块将日志过滤成不同的输出并推送到对应的两个不同MongoDB集群服务上，那么我们可以在Flume的任务流程配置中配置好两个不同的Sink实例，这两个Sink实例中的数据分别来自于不同的通道Channel，同时为两个不同的Sink实例指定不同的过滤器参数名（使用参数名filterName指定，默认提供的filterName参数值是filter）：    
       
 ```Text
-a1.sinks.k1.type=com.bfw.flume.plugin.mdb.MongoSink
+a1.sinks.k1.type=com.github.lixiang2114.flume.plugin.mdb.MongoSink
 a1.sinks.k1.hostList=192.168.162.129:27017,192.168.162.130:27017,192.168.162.131:27017
 a1.sinks.k1.filterName=filter01
 a1.sinks.k1.channel=c1  
 
-a1.sinks.k2.type=com.bfw.flume.plugin.mdb.MongoSink
+a1.sinks.k2.type=com.github.lixiang2114.flume.plugin.mdb.MongoSink
 a1.sinks.k2.hostList=192.168.162.132:27017,192.168.162.133:27017,192.168.162.134:27017
 a1.sinks.k2.filterName=filter02
 a1.sinks.k2.channel=c2    
@@ -353,9 +355,9 @@ fieldSeparator=,
 fields=orderId,orderName,price,userId      
 ```
 
-最后还需要分别编写过滤器类UserInfoFilter和OrderInfoFilter，注意上面定义的这两个类都没有包名，这说明它们被放在默认的classpath的类路径根目录下，为了便于简化程序员的编码和部署工作，ElasticSink插件允许对一些非常简单的过滤操作只需要编写一个单类即可，编译好这个单类并将它拷贝到filter目录下即完成快捷部署。当然如果对于一些过滤非常复杂的操作（比如在过滤中涉及到一些业务逻辑的处理等），我们也可以启动一个完整的JAVA工程或Maven工程来编写过滤器，最后将其打包成jar文件拷贝到filter目录下，** 过滤器的编写参见上述章节的讲解 **    
+最后还需要分别编写过滤器类UserInfoFilter和OrderInfoFilter，注意上面定义的这两个类都没有包名，这说明它们被放在默认的classpath的类路径根目录下，为了便于简化程序员的编码和部署工作，MongoSink插件允许对一些非常简单的过滤操作只需要编写一个单类即可，编译好这个单类并将它拷贝到filter目录下即完成快捷部署。当然如果对于一些过滤非常复杂的操作（比如在过滤中涉及到一些业务逻辑的处理等），我们也可以启动一个完整的JAVA工程或Maven工程来编写过滤器，最后将其打包成jar文件拷贝到filter目录下，** 过滤器的编写参见上述章节的讲解 **    
     
-程序员在自定义过滤器实现的过程中，其过滤器类中成员变量名应该与过滤器配置文件中的参数名保持一致，这将有利于ElasticSink插件自动化初始化类的成员，同时在过滤器规范中有有以下两个接口是可选的实现：    
+程序员在自定义过滤器实现的过程中，其过滤器类中成员变量名应该与过滤器配置文件中的参数名保持一致，这将有利于MongoSink插件自动化初始化类的成员，同时在过滤器规范中有有以下两个接口是可选的实现：    
 
 ```JAVA
 /**
@@ -441,12 +443,12 @@ passWord=123456
 
 2. 在自定义过滤器中覆盖以下方法并返回用户名和密码  
 ```
-import com.bfw.flume.plugin.mdb.filter.SinkFilter;
+import com.github.lixiang2114.flume.plugin.mdb.filter.MdbSinkFilter;
 /**
  * @author Louis(LiXiang)
  * @description 自定义日志过滤器
  */
-public class MdbLoggerFilter implements SinkFilter{
+public class MdbLoggerFilter implements MdbSinkFilter{
 	/**
 	 * 登录Elastic用户名
 	 */
