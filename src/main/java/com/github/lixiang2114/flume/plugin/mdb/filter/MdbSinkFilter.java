@@ -1,5 +1,6 @@
 package com.github.lixiang2114.flume.plugin.mdb.filter;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -25,7 +26,7 @@ public interface MdbSinkFilter {
 	 * @param record 文本记录
 	 * @return 文档字典对象
 	 */
-	public Map<String,Object> doFilter(String record);
+	public HashMap<String,Object>[] doFilter(String record);
 	
 	/**
 	 * 获取文档ID字段名

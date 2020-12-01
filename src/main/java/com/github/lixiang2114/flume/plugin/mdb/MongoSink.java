@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -157,12 +158,22 @@ public class MongoSink extends AbstractSink implements Configurable, BatchSizeSu
 				String record=new String(event.getBody(),Charset.defaultCharset()).trim();
 				if(0==record.length()) continue;
 				
-				Map<String,Object> doc=(Map<String,Object>)doFilter.invoke(filterObject, record);
-				if(null==doc || 0==doc.size()) continue;
+				HashMap<String,Object>[] docs=(HashMap<String,Object>[])doFilter.invoke(filterObject, record);
+				if(null==docs || 0==docs.length) continue;
 				
-				String docIdVal=null;
-				if(null!=docId && 0!=docId.length() && 0!=(docIdVal=doc.getOrDefault(docId, "").toString().trim()).length()) doc.put("_id", docIdVal);
-				batchList.add(new Document(doc));
+				if(null==docId  || 0==docId.length()){
+					for(HashMap<String,Object> doc:docs){
+						if(null==doc || 0==doc.size()) continue;
+						batchList.add(new Document(doc));
+					}
+				}else{
+					String docIdVal=null;
+					for(HashMap<String,Object> doc:docs){
+						if(null==doc || 0==doc.size()) continue;
+						if(0!=(docIdVal=doc.getOrDefault(docId, "").toString().trim()).length()) doc.put("_id", docIdVal);
+						batchList.add(new Document(doc));
+					}
+				}
 			}
 			
 			if(0!=batchList.size()){
