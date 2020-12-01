@@ -145,7 +145,7 @@ for index in {1..100000};do echo "${index},info,this is my ${index} times test";
 ```JAVA
 package com.github.lixiang2114.flume.plugin.mdb.filter;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -170,7 +170,7 @@ public interface MdbSinkFilter {
 	 * @param record 文本记录
 	 * @return 文档字典对象
 	 */
-	public Map<String,Object> doFilter(String record);
+	public HashMap<String,Object>[] doFilter(String record);
 	
 	/**
 	 * 获取文档ID字段名
@@ -264,13 +264,13 @@ public class MdbLoggerFilter implements MdbSinkFilter{
 	}
 
 	@Override
-	public Map<String, Object> doFilter(String record) { 
+	public HashMap<String, Object>[] doFilter(String record) { 
 		String[] fieldValues=commaRegex.split(record);
 		HashMap<String,Object> map=new HashMap<String,Object>();
 		map.put(fields[0], fieldValues[0].trim());
 		map.put(fields[1], fieldValues[1].trim());
 		map.put(fields[2], fieldValues[2].trim());
-		return map;
+		return new HashMap[]{map};
 	}
 
 	@Override
