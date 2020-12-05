@@ -394,6 +394,28 @@ public class MongoSink extends AbstractSink implements Configurable, BatchSizeSu
 			mongoClient=new MongoClient(hostList,MongoCredential.createCredential(userName, dataBaseName, passWord.toCharArray()),mongoClientOptions);
 		}
 		
+		Method targetMethod=null;
+		try{
+			Method[] methods=filterType.getDeclaredMethods();
+			for(Method method:methods) {
+				if(!"setMongoClient".equals(method.getName())) continue;
+				Class<?>[] paramTypes=method.getParameterTypes();
+				if(1!=paramTypes.length) continue;
+				if(!paramTypes[0].isAssignableFrom(MongoClient.class)) continue;
+				targetMethod=method;
+			}
+		}catch(Exception e){}
+		
+		if(null==targetMethod) {
+			System.out.println("Warn:==='setMongoClient' method not found, mongoClient may be not inited...");
+		}else{
+			try {
+				targetMethod.invoke(filterObject, mongoClient);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 		MongoDatabase database=mongoClient.getDatabase(dataBaseName);
 		mongoCollection=database.getCollection(collectionName,Document.class);
 		if(null==mongoCollection) throw new RuntimeException("collection object can not be NULL!!!");
@@ -471,5 +493,4 @@ public class MongoSink extends AbstractSink implements Configurable, BatchSizeSu
 		String value=context.getString(key,defaultValue).trim();
 		return value.length()==0?defaultValue:value;
 	}
-	
 }

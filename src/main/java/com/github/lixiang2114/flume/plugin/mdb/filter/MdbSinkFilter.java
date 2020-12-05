@@ -53,6 +53,12 @@ public interface MdbSinkFilter {
 	default public void filterConfig(Properties properties){}
 	
 	/**
+	 * 设置MongoDB客户端
+	 * @return ID字段名
+	 */
+	default public void setMongoClient(Object mongoClient){}
+	
+	/**
 	 * 插件上下文配置(可选实现)
 	 * @param config 配置
 	 */
