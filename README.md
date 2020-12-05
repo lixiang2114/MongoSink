@@ -146,6 +146,7 @@ for index in {1..100000};do echo "${index},info,this is my ${index} times test";
 package com.github.lixiang2114.flume.plugin.mdb.filter;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -195,6 +196,12 @@ public interface MdbSinkFilter {
 	 * @param config 配置
 	 */
 	default public void filterConfig(Properties properties){}
+	
+	/**
+	 * 设置MongoDB客户端
+	 * @return ID字段名
+	 */
+	default public void setMongoClient(Object mongoClient){}
 	
 	/**
 	 * 插件上下文配置(可选实现)
